@@ -10,7 +10,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
-@CrossOrigin(origins = "http://localhost:5173") // Khớp với port React của bạn
 public class OrderController {
 
     @Autowired

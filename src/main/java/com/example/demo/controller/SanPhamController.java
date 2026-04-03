@@ -16,7 +16,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "http://localhost:5173")
 public class SanPhamController {
     @Autowired
     private ProductRepository sanPhamRepository;
