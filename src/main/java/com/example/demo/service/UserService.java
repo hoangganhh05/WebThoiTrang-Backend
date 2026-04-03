@@ -15,8 +15,11 @@ public class UserService {
         if(userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new RuntimeException("Tên tài khoản đã tồn tại!");
         }
-        // Mặc định đăng ký mới là role USER nếu chưa có
-        if (user.getRole() == null) user.setRole("USER");
+        
+        // BẢO MẬT: Ép buộc mọi tài khoản tạo từ API ngoài phải là USER 
+        // Bất chấp Front-end hoặc Hacker có cố tình gửi chuỗi role="ADMIN" lên
+        user.setRole("USER");
+        
         return userRepository.save(user);
     }
 
