@@ -9,5 +9,5 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     // Tìm người dùng bằng tên tài khoản (dùng cho Login)
-    Optional<User> findByUsername(String username);
+    Optional<User> findFirstByUsername(String username);
 }

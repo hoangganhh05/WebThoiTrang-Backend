@@ -12,7 +12,7 @@ public class UserService {
 
     public User register(User user) {
         // Kiểm tra nếu tên đăng nhập đã tồn tại
-        if(userRepository.findByUsername(user.getUsername()).isPresent()) {
+        if(userRepository.findFirstByUsername(user.getUsername()).isPresent()) {
             throw new RuntimeException("Tên tài khoản đã tồn tại!");
         }
         
@@ -24,7 +24,7 @@ public class UserService {
     }
 
     public User login(String username, String password) {
-        User user = userRepository.findByUsername(username)
+        User user = userRepository.findFirstByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại!"));
 
         // So sánh mật khẩu (tạm thời để plain text theo yêu cầu của bạn)

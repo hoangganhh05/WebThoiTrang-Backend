@@ -21,14 +21,15 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Kiểm tra xem đã có tài khoản mang tên admin chưa
-        if (userRepository.findByUsername(adminUsername).isEmpty()) {
-            User admin = new User();
-            admin.setUsername(adminUsername);
-            admin.setPassword(adminPassword); 
-            admin.setRole("ADMIN"); // Quyền tối cao
-            userRepository.save(admin);
-            System.out.println("====== TẠO TÀI KHOẢN ADMIN THÀNH CÔNG! ======");
-        }
+        // Tìm tài khoản mang tên admin
+        User admin = userRepository.findFirstByUsername(adminUsername).orElse(new User());
+        
+        // Cập nhật lại toàn bộ thông tin (nếu có sẵn thì ghi đè, chưa có thì tạo mới)
+        admin.setUsername(adminUsername);
+        admin.setPassword(adminPassword); 
+        admin.setRole("ADMIN"); // Quyền tối cao
+        
+        userRepository.save(admin);
+        System.out.println("====== TẠO/CẬP NHẬT TÀI KHOẢN ADMIN THÀNH CÔNG! ======");
     }
 }
