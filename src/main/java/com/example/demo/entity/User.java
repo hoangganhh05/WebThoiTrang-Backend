@@ -25,5 +25,9 @@ public class User {
     private String password;
 
     private String role;
+    
+    // Lưu giữ Token của thiết bị ĐANG ĐĂNG NHẬP hiện tại (Giới hạn 1 thiết bị)
+    @Column(length = 500)
+    private String currentToken;
 }
 

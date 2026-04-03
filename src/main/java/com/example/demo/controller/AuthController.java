@@ -28,6 +28,9 @@ public class AuthController {
     @Autowired
     private JwtTokenProvider tokenProvider;
 
+    @Autowired
+    private com.example.demo.repository.UserRepository userRepository;
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) {
         try {
@@ -49,6 +52,11 @@ public class AuthController {
             // Sinh Thẻ Bài Dấu Nhận (JWT Token) siêu bảo mật
             CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
             String jwt = tokenProvider.generateToken(principal);
+
+            // [TÍNH NĂNG 1 THIẾT BỊ] Lưu token mới nhất vào hệ thống
+            User dbUser = principal.getUser();
+            dbUser.setCurrentToken(jwt);
+            userRepository.save(dbUser); // Ghi đè token cũ, các máy khác dùng token cũ sẽ bị văng ra!
 
             // Đóng gói Token và Info trả về cho ReactJS
             Map<String, Object> response = new HashMap<>();

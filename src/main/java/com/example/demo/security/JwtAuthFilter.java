@@ -36,6 +36,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                 // Nạp thông tin Khách Hàng vào RAM của Security Context
                 UserDetails userDetails = customUserDetailsService.loadUserById(userId);
+                CustomUserDetails customUser = (CustomUserDetails) userDetails;
+                
+                // KIỂM TRA ĐỘC QUYỀN 1 THIẾT BỊ (Phát hiện đăng nhập chỗ khác)
+                if(customUser.getUser().getCurrentToken() == null || !customUser.getUser().getCurrentToken().equals(jwt)) {
+                    throw new RuntimeException("Phát hiện Token cũ! Tài khoản này đã đăng nhập ở thiết bị khác.");
+                }
                 
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
