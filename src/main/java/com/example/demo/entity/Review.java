@@ -1,36 +1,31 @@
 package com.example.demo.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import java.time.LocalDateTime;
 
 @Entity
-@Getter
-@Setter
 @Table(name = "reviews")
+@Data
 public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int rating;      // 1 - 5 sao
-    private String comment;  // Nội dung bình luận
+    private Long userId; // Tạm thời dùng userId kiểu số nguyên
+    private String userName; // Lưu tên người đánh giá
+    
+    private Long productId; // Đánh giá cho SP nào
+
+    private int rating; // Số sao từ 1 đến 5
+    
+    @Column(columnDefinition = "TEXT")
+    private String comment;
+
     private LocalDateTime createdAt;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    @JsonIgnoreProperties({"password", "orders"})
-    private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    @JsonIgnoreProperties({"orderItems", "reviews", "category"})
-    private Product product;
-
+    
     @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
     }
 }

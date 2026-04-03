@@ -20,13 +20,8 @@ public class ReviewService {
 
     public Review addReview(Long userId, Long productId, int rating, String comment) {
         Review review = new Review();
-        User user = new User();
-        user.setId(userId);
-        review.setUser(user);
-
-        Product product = new Product();
-        product.setId(productId);
-        review.setProduct(product);
+        review.setUserId(userId);
+        review.setProductId(productId);
 
         review.setRating(rating);
         review.setComment(comment);
