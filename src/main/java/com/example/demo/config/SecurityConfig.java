@@ -50,9 +50,10 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                // Những đường dẫn công khai ai cũng vào được
+                // Cho phép các yêu cầu kiểm tra (Preflight) của trình duyệt
+                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+                // Những đường dẫn công khai
                 .requestMatchers("/api/auth/**", "/api/products", "/api/products/**", "/api/categories/**", "/uploads/**", "/api/reviews/**", "/api/reviews", "/api/cart/**").permitAll()
-                // Tất cả những đường dẫn còn lại (như Đặt Hàng, Duyệt Đơn) BẮT BUỘC PHẢI TRÌNH THẺ JWT
                 .anyRequest().authenticated()
             )
             // Lắp đặt Trạm Kiểm Soát JWT đứng trước mọi yêu cầu
