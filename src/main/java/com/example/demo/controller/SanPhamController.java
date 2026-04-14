@@ -11,6 +11,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Map;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {
+        RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
+        RequestMethod.DELETE, RequestMethod.OPTIONS, RequestMethod.PATCH
+})
 @RestController
 @RequestMapping("/api/products")
 public class SanPhamController {
@@ -24,6 +28,7 @@ public class SanPhamController {
     public List<Product> getProducts() {
         return sanPhamRepository.findAll();
     }
+
     @GetMapping("/{id}")
     public Product getById(@PathVariable Long id) {
         return sanPhamRepository.findById(id)
@@ -35,32 +40,26 @@ public class SanPhamController {
         return sanPhamRepository.findBySanPhamContaining(keyword);
     }
 
-
     @PostMapping
     public Product save(
             @RequestPart("product") Product product,
             @RequestPart(value = "file", required = false) MultipartFile file
     ) {
         if (product.getPrice() <= 0) {
-            throw new RuntimeException("Giá Phải Lớn Hơn 0!");
+            throw new RuntimeException("Giá phải lớn hơn 0!");
         }
-        if (product.getQuantity() <= 0) {
+        if (product.getQuantity() < 0) {
             throw new RuntimeException("Số lượng không hợp lệ!");
         }
-
         try {
             if (file != null && !file.isEmpty()) {
-                // Upload lên Cloudinary thay vì lưu local
                 Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
-                String url = uploadResult.get("url").toString();
-                product.setImageUrl(url);
+                product.setImageUrl(uploadResult.get("secure_url").toString());
             }
-
             return sanPhamRepository.save(product);
-
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("Lỗi khi upload ảnh lên Cloudinary: " + e.getMessage());
+            throw new RuntimeException("Lỗi khi upload ảnh: " + e.getMessage());
         }
     }
 
@@ -71,29 +70,24 @@ public class SanPhamController {
             @RequestPart(value = "file", required = false) MultipartFile file
     ) {
         Product sanPham = sanPhamRepository.findById(id).orElse(null);
+        if (sanPham == null) return null;
 
-        if (sanPham != null) {
-            sanPham.setSanPham(product.getSanPham());
-            sanPham.setPrice(product.getPrice());
-            sanPham.setQuantity(product.getQuantity());
-            if (product.getCategory() != null) {
-                sanPham.setCategory(product.getCategory());
-            }
-
-            try {
-                if (file != null && !file.isEmpty()) {
-                    // Upload lên Cloudinary cho hàm update
-                    Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
-                    String url = uploadResult.get("url").toString();
-                    sanPham.setImageUrl(url);
-                }
-                return sanPhamRepository.save(sanPham);
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException("Lỗi khi cập nhật ảnh lên Cloudinary: " + e.getMessage());
-            }
+        sanPham.setSanPham(product.getSanPham());
+        sanPham.setPrice(product.getPrice());
+        sanPham.setQuantity(product.getQuantity());
+        if (product.getCategory() != null) {
+            sanPham.setCategory(product.getCategory());
         }
-        return null;
+        try {
+            if (file != null && !file.isEmpty()) {
+                Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+                sanPham.setImageUrl(uploadResult.get("secure_url").toString());
+            }
+            return sanPhamRepository.save(sanPham);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Lỗi khi cập nhật ảnh: " + e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
