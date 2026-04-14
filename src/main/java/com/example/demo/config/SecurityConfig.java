@@ -51,7 +51,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 // Những đường dẫn công khai ai cũng vào được
-                .requestMatchers("/api/auth/**", "/api/products/**", "/api/categories/**", "/uploads/**", "/api/reviews/**", "/api/reviews", "/api/cart/**").permitAll()
+                .requestMatchers("/api/auth/**", "/api/products", "/api/products/**", "/api/categories/**", "/uploads/**", "/api/reviews/**", "/api/reviews", "/api/cart/**").permitAll()
                 // Tất cả những đường dẫn còn lại (như Đặt Hàng, Duyệt Đơn) BẮT BUỘC PHẢI TRÌNH THẺ JWT
                 .anyRequest().authenticated()
             )
